@@ -1,0 +1,76 @@
+```{r}
+library(dplyr)
+library(ggplot2)
+```
+```{r}
+hdata = read.csv('D:/Deep_Learning_AI/ANN_CarSales-master/ANN_CarSales-master/Car_Purchasing_Data.csv', header = TRUE)
+```
+
+```{r}
+str(hdata)
+```
+
+```{r}
+dfData = data.frame(hdata)
+str(dfData)
+```
+
+```{r}
+dfData = subset(dfData, select = -c(Customer.Name, Customer.e.mail) )
+```
+
+```{r}
+str(dfData)
+```
+```{r}
+# Convert 'country' columns to factors
+categorical_cols = c("Country")
+dfData[categorical_cols] = lapply(dfData[categorical_cols], as.factor)
+str(dfData)
+```
+
+```{r}
+continuous_cols = setdiff(colnames(dfData), categorical_cols)
+continuous_cols
+```
+```{r}
+# Fraction of NAs in each column of the data frame
+dfData_NA = setNames(stack(sapply(dfData, function(x){(sum(is.na(x))/length(x))*100}))[2:1], c('Feature','Value'))
+p = ggplot(data = dfData_NA, aes(x = Feature, y = Value)) +
+  geom_bar(stat = 'identity', fill = 'steelblue', width = 0.3) +
+  theme(text = element_text(size = 14, face = 'bold'),
+  axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)) +
+  xlab('') + ylab('Percentage') +
+  ggtitle('Percentage of NAs across all features')
+p
+```
+
+
+```{r}
+# Build a linear model to predict car purchase amount as a function of country
+model = lm(data = dfData, Car.Purchase.Amount ~ Country)
+summary(model)
+```
+
+```{r}
+str(dfData)
+```
+
+
+```{r}
+# Build a linear model to predict car purchase amount as a function of age
+model = lm(data = dfData, Car.Purchase.Amount ~ Age)
+summary(model)
+```
+
+```{r}
+# Build a linear model to predict car purchase amount as a function of age and Annual Salary
+model = lm(data = dfData, Car.Purchase.Amount ~ Age + Annual.Salary)
+summary(model)
+```
+```{r}
+# Build a linear model to predict car purchase amount as a function of all features
+model = lm(data = dfData, Car.Purchase.Amount ~ Age + Annual.Salary + Credit.Card.Debt + Net.Worth)
+summary(model)
+```
+
